@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cash Flow Minimization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .form-group button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cash Flow Minimization</h1>
+    <div class="form-group">
+      <label>Number of Banks:</label>
+      <input type="number" id="numBanks" placeholder="Enter the number of banks">
+    </div>
+    <div class="form-group">
+      <label>Bank Data:</label>
+      <table id="bankTable">
+        <tr>
+          <th>Bank Name</th>
+          <th>Bank Types</th>
+        </tr>
+      </table>
+      <button id="addBank">Add Bank</button>
+    </div>
+    <div class="form-group">
+      <label>Graph Data:</label>
+      <table id="graphTable">
+        <tr>
+          <th>From</th>
+          <th>To</th>
+          <th>Amount</th>
+        </tr>
+      </table>
+      <button id="addGraphEntry">Add Graph Entry</button>
+    </div>
+    <div class="form-group">
+      <label>Max Number of Types:</label>
+      <input type="number" id="maxNumTypes" placeholder="Enter the maximum number of types">
+    </div>
+    <div class="form-group">
+      <button id="minimizeBtn">Minimize Cash Flow</button>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function addBankRow() {
+      const bankTable = document.getElementById("bankTable");
+      const row = bankTable.insertRow();
+      const nameCell = row.insertCell();
+      const typesCell = row.insertCell();
+
+      nameCell.innerHTML = '<input type="text" class="bank-name" placeholder="Bank Name">';
+      typesCell.innerHTML = '<input type="text" class="bank-types" placeholder="Bank Types">';
+    }
+
+    function addGraphRow() {
+      const graphTable = document.getElementById("graphTable");
+      const row = graphTable.insertRow();
+      const fromCell = row.insertCell();
+      const toCell = row.insertCell();
+      const amountCell = row.insertCell();
+
+      fromCell.innerHTML = '<input type="number" class="graph-from" placeholder="From Bank">';
+      toCell.innerHTML = '<input type="number" class="graph-to" placeholder="To Bank">';
+      amountCell.innerHTML = '<input type="number" class="graph-amount" placeholder="Amount">';
+    }
+
+    function minimizeCashFlow() {
+      const numBanksInput = document.getElementById("numBanks");
+      const maxNumTypesInput = document.getElementById("maxNumTypes");
+
+      const numBanks = parseInt(numBanksInput.value);
+      const maxNumTypes = parseInt(maxNumTypesInput.value);
+
+      const bankNameInputs = document.querySelectorAll(".bank-name");
+      const bankTypeInputs = document.querySelectorAll(".bank-types");
+
+      const graphFromInputs = document.querySelectorAll(".graph-from");
+      const graphToInputs = document.querySelectorAll(".graph-to");
+      const graphAmountInputs = document.querySelectorAll(".graph-amount");
+
+      const input = [];
+      const graph = [];
+
+      for (let i = 0; i < numBanks; i++) {
+        const name = bankNameInputs[i].value;
+        const types = bankTypeInputs[i].value.split(",").map(type => type.trim());
+
+        input.push({ name, types });
+      }
+
+      for (let i = 0; i < numBanks; i++) {
+        graph.push([]);
+        for (let j = 0; j < numBanks; j++) {
+          graph[i].push(0);
+        }
+      }
+
+      for (let i = 0; i < graphFromInputs.length; i++) {
+        const from = parseInt(graphFromInputs[i].value);
+        const to = parseInt(graphToInputs[i].value);
+        const amount = parseInt(graphAmountInputs[i].value);
+
+        graph[from][to] = amount;
+      }
+
+      const result = yourMinimizeCashFlowFunction(numBanks, input, graph, maxNumTypes);
+      displayResult(result);
+    }
+
+    function displayResult(result) {
+      const resultContainer = document.getElementById("result");
+      resultContainer.innerHTML = "";
+
+      const table = document.createElement("table");
+      const headerRow = table.insertRow();
+      const headerFrom = headerRow.insertCell();
+      const headerTo = headerRow.insertCell();
+      const headerAmount = headerRow.insertCell();
+
+      headerFrom.textContent = "From";
+      headerTo.textContent = "To";
+      headerAmount.textContent = "Amount";
+
+      for (let i = 0; i < result.length; i++) {
+        const row = table.insertRow();
+        const fromCell = row.insertCell();
+        const toCell = row.insertCell();
+        const amountCell = row.insertCell();
+
+        fromCell.textContent = result[i].from;
+        toCell.textContent = result[i].to;
+        amountCell.textContent = result[i].amount;
+      }
+
+      resultContainer.appendChild(table);
+    }
+
+    const addBankButton = document.getElementById("addBank");
+    const addGraphEntryButton = document.getElementById("addGraphEntry");
+
+    addBankButton.addEventListener("click", addBankRow);
+    addGraphEntryButton.addEventListener("click", addGraphRow);
+
+    const minimizeButton = document.getElementById("minimizeBtn");
+    minimizeButton.addEventListener("click", minimizeCashFlow);
+  </script>
+</body>
+</html>
